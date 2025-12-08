@@ -1,2 +1,5 @@
 # pip install python-dotenv
 # pip install opencv-python
+# pip install fastAPI
+# pip install websockets opencv-python
+# pip install uvicorn

@@ -1,6 +1,8 @@
 # 매인 실행문
 
-import cv2
+from endpoints import camera_post_video
+import asyncio
+
 
 if __name__ == "__main__":
-    pass
+    asyncio.run(camera_post_video())

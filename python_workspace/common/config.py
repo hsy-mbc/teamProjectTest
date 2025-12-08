@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 class LoggingMiddleware:# BaseHTTPMiddleware
     pass
 
+
 # camera cam ip 정보 .env 파일에서 환경변수 가져오는 class
 class CameraPath:
     BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,3 +21,14 @@ class CameraPath:
     WEBCAM_PORT = os.getenv("WEBCAM_PORT")
     WEBCAM_ID = os.getenv("WEBCAM_ID")
     WEBCAM_PW = os.getenv("WEBCAM_PW")
+
+
+# PC2 ip 정보
+class PC2Path:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+    env_path = BASE_DIR / "property.env"
+
+    load_dotenv(env_path)
+
+    PC2_IP = os.getenv("PC2_IP")

@@ -60,7 +60,7 @@
                                     <span class="rec-indicator">● REC</span>
                                 </div>
                                 <div class="video-display">
-                                    <img th:src="@{/images/placeholder-grid.png}" alt="CCTV 1">
+                                    <img id="live-image" src="" alt="CCTV 1"/>
                                 </div>
                                 <div class="panel-footer">
                                     <span class="ai-status">AI 분석 중...</span>
@@ -172,6 +172,34 @@
 
     </div> <!-- app-main 끝 -->
 </div> <!-- app-layout 끝 -->
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080/ws/video");
+
+        socket.binaryType = "blob";
+
+        const imgElement = document.getElementById("live-image");
+
+        socket.onopen = function() {
+            console.log("Java 서버 접속");
+        };
+
+        socket.onmessage = function(event) {
+            if (event.data instanceof Blob) {
+                if (imgElement.src.startsWith("blob:")) {
+                    URL.revokeObjectURL(imgElement.src);
+                }
+
+                const imageUrl = URL.createObjectURL(event.data);
+                imgElement.src = imageUrl;
+            }
+        };
+
+        socket.onclose = function() {
+            console.log("서버 연결 끊김");
+        };
+
+    </script>
 
 </body>
 </html>
