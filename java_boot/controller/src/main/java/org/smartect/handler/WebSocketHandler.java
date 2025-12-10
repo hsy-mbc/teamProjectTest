@@ -1,6 +1,5 @@
 package org.smartect.handler;
 
-import ch.qos.logback.core.CoreConstants;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class VideoWebSocketHandler extends TextWebSocketHandler {
+public class WebSocketHandler extends TextWebSocketHandler {
 
     private final Map<String, WebSocketSession> CLIENTS = new ConcurrentHashMap<>();
 
@@ -29,7 +28,7 @@ public class VideoWebSocketHandler extends TextWebSocketHandler {
         System.out.println(session.getId() + "클라이언트의 접속이 끊겼습니다.");
     }
 
-    public void broadcastData(String jsonData, byte[] imageBytes) {
+    public void livePostData(String jsonData, byte[] imageBytes) {
 
         for (WebSocketSession session : CLIENTS.values()) {
             try {

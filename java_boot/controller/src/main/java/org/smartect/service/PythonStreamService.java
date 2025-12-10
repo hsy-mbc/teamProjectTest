@@ -1,15 +1,13 @@
 package org.smartect.service;
 
 import lombok.RequiredArgsConstructor;
-import org.smartect.handler.VideoWebSocketHandler;
+import org.smartect.handler.WebSocketHandler;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -24,9 +22,9 @@ import jakarta.websocket.WebSocketContainer;
 @RequiredArgsConstructor
 public class PythonStreamService implements CommandLineRunner {
 
-    private final VideoWebSocketHandler videoWebSocketHandler;
+    private final WebSocketHandler videoWebSocketHandler;
 
-    private final String PYTHON_SERVER_URL = "ws://localhost:8000/ws/output";
+    private final String PYTHON_SERVER_URL = "ws://192.168.0.166:8000/ws/output";
 
     @Override
     public void run(String... args) {
@@ -60,7 +58,7 @@ public class PythonStreamService implements CommandLineRunner {
                     byte[] imageBytes = new byte[imageBuffer.remaining()];
                     imageBuffer.get(imageBytes);
 
-                    videoWebSocketHandler.broadcastData(lastJsonData, imageBytes);
+                    videoWebSocketHandler.livePostData(lastJsonData, imageBytes);
                 } catch (Exception e) {
                     System.out.println("이미지 처리 중 오류: " + e.getMessage());
                 }

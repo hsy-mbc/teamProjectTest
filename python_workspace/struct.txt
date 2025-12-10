@@ -3,13 +3,13 @@ python_workspace/
 │   ├── action_service/         # 컴1. 행동 침입 감지 API
 │   │   ├── __init__.py
 │   │   ├── camera.py           # 카메라 연동
-│   │   ├── main.py             # 화재 서버 실행점 (Port: 8081)
+│   │   ├── main.py             # 서버 시작
 │   │   ├── detector.py         # 화재 전용 감지 로직
 │   │   └── endpoints.py        # 화재 관련 웹소켓 API
 │   │
 │   └── fire_service/           # 컴2. 화재 감지 API
 │       ├── __init__.py
-│       ├── main.py             # 행동 서버 실행점 (Port: 8082)
+│       ├── main.py             # 중앙 서버 시작
 │       ├── detector.py         # 행동 전용 감지 로직
 │       └── endpoints.py        # 행동 관련 웹소켓 API
 │

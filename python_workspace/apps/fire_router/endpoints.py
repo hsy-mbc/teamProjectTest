@@ -31,6 +31,8 @@ async def input_api(websocket: WebSocket):
             action_json = await websocket.receive_json()
             image_bytes = await websocket.receive_bytes()
 
+            # 화재 감지 모델 함수 return eventJson
+
             fire_result = {"is_fire": False}
 
             final_json = {

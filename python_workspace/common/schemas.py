@@ -1,12 +1,6 @@
 # json (pydantic을 사용하여 데이터 모델을 정의)
 
 
-
-class DetectionResult():
-    message : str
-    image : str
-
-
 class EventJson():
     cam_no: int            # 2
     event_type: str        # "touch"

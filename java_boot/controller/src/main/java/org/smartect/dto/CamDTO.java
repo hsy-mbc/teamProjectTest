@@ -1,4 +1,4 @@
 package org.smartect.dto;
 
-public class videoFrameDTO {
+public class CamDTO {
 }

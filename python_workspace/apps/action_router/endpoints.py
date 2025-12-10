@@ -19,6 +19,8 @@ async def camera_post_video():
             ret, frame = cap.read()
             if not ret: break
 
+            # 행동 감지 모델 함수 return action_json
+
             action_data = {"is_touch": False, "confidence": 0.0}
 
             frame = cv2.resize(frame, (640, 480))
