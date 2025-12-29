@@ -1,11 +1,10 @@
 package org.smartect.service;
 
-import lombok.RequiredArgsConstructor;
 import org.smartect.handler.WebSocketHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -19,12 +18,21 @@ import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.WebSocketContainer;
 
 @Service
-@RequiredArgsConstructor
 public class PythonStreamService implements CommandLineRunner {
 
     private final WebSocketHandler videoWebSocketHandler;
+    private final EventJsonService eventJsonService;
+    private final String PYTHON_SERVER_URL;
 
-    private final String PYTHON_SERVER_URL = "ws://192.168.0.166:8000/ws/output";
+    public PythonStreamService(
+            WebSocketHandler videoWebSocketHandler,
+            EventJsonService eventJsonService,
+            @Value("localhost") String ip) {
+        this.PYTHON_SERVER_URL = String.format("ws://%s:8000/ws/output", ip);
+        this.videoWebSocketHandler = videoWebSocketHandler;
+        this.eventJsonService = eventJsonService;
+        System.out.println("설정된 python 서버 url: " + this.PYTHON_SERVER_URL);
+    }
 
     @Override
     public void run(String... args) {
@@ -39,7 +47,6 @@ public class PythonStreamService implements CommandLineRunner {
         StandardWebSocketClient client = new StandardWebSocketClient(container);
 
         TextWebSocketHandler pythonHandler = new TextWebSocketHandler() {
-            private String lastJsonData = "{}";
 
             @Override
             public void afterConnectionEstablished(WebSocketSession session) {
@@ -47,20 +54,21 @@ public class PythonStreamService implements CommandLineRunner {
             }
 
             @Override
-            protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-                lastJsonData = message.getPayload();
-            }
-
-            @Override
             protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
                 try {
-                    ByteBuffer imageBuffer = message.getPayload();
-                    byte[] imageBytes = new byte[imageBuffer.remaining()];
-                    imageBuffer.get(imageBytes);
+                    ByteBuffer payload = message.getPayload();
+                    byte[] combinedData  = new byte[payload.remaining()];
+                    payload.get(combinedData);
 
-                    videoWebSocketHandler.livePostData(lastJsonData, imageBytes);
+                    // System.out.println("통합 데이터 수신: " + combinedData.length + " bytes");
+
+                    videoWebSocketHandler.livePostData(combinedData);
+
+                    // 비동기 Json 처리 서비스
+                    eventJsonService.process(combinedData);
+
                 } catch (Exception e) {
-                    System.out.println("이미지 처리 중 오류: " + e.getMessage());
+                    System.out.println("핸들링 오류: " + e.getMessage());
                 }
             }
 
@@ -75,6 +83,7 @@ public class PythonStreamService implements CommandLineRunner {
                 client.doHandshake(pythonHandler, new WebSocketHttpHeaders(), URI.create(PYTHON_SERVER_URL)).get();
             } catch (Exception e) {
                 System.out.println("⚠️ PC2 서버를 찾을 수 없습니다. (Python 서버가 켜져있는지 확인하세요)");
+                e.printStackTrace();
             }
         });
     }
